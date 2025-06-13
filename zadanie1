@@ -1,3 +1,4 @@
+### Kod funkcji
 
 def symbolic_to_numeric(symbolic: str) -> str:
     if len(symbolic) != 9:
@@ -29,7 +30,7 @@ def numeric_to_symbolic(numeric: str) -> str:
         result += r + w + x
     return result
 
-
+###Testy jednostkowe 
 
 import unittest
 
