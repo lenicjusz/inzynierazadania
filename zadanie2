@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+import argparse
+import sys
+
+def symbolic_to_numeric(symbolic: str) -> str:
+    if len(symbolic) != 9:
+        raise ValueError("Tryb symboliczny musi mieć dokładnie 9 znaków")
+
+    mapping = {'r': 4, 'w': 2, 'x': 1, '-': 0}
+    numeric = []
+
+    for i in range(0, 9, 3):
+        triplet = symbolic[i:i+3]
+        val = sum(mapping[ch] for ch in triplet)
+        numeric.append(str(val))
+
+    return ''.join(numeric)
+
+def numeric_to_symbolic(numeric: str) -> str:
+    if len(numeric) != 3 or not numeric.isdigit():
+        raise ValueError("Tryb numeryczny musi być ciągiem 3 cyfr")
+
+    numeric_vals = [int(d) for d in numeric]
+    if any(not (0 <= val <= 7) for val in numeric_vals):
+        raise ValueError("Każda cyfra w trybie numerycznym musi być od 0 do 7")
+
+    result = ''
+    for val in numeric_vals:
+        r = 'r' if val & 4 else '-'
+        w = 'w' if val & 2 else '-'
+        x = 'x' if val & 1 else '-'
+        result += r + w + x
+    return result
+
+def main():
+    parser = argparse.ArgumentParser(description="Konwertuj tryby uprawnień (symboliczne <-> numeryczne)")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-s', '--symbolic', help="Tryb symboliczny, np. rwxr-xr--")
+    group.add_argument('-n', '--numeric', help="Tryb numeryczny, np. 754")
+
+    args = parser.parse_args()
+
+    try:
+        if args.symbolic:
+            print(symbolic_to_numeric(args.symbolic))
+        elif args.numeric:
+            print(numeric_to_symbolic(args.numeric))
+    except ValueError as e:
+        print(f"Błąd: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
