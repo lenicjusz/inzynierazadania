@@ -1,0 +1,70 @@
+### Kod funkcji 
+def symbolic_to_numeric(symbolic: str) -> str:
+    if len(symbolic) != 9:
+        raise ValueError("Tryb symboliczny musi mieć dokładnie 9 znaków")
+    
+    mapping = {'r': 4, 'w': 2, 'x': 1, '-': 0}
+    numeric = []
+    
+    for i in range(0, 9, 3):
+        triplet = symbolic[i:i+3]
+        val = sum(mapping[ch] for ch in triplet)
+        numeric.append(str(val))
+        
+    return ''.join(numeric)
+
+def numeric_to_symbolic(numeric: str) -> str:
+    if len(numeric) != 3 or not numeric.isdigit():
+        raise ValueError("Tryb numeryczny musi być ciągiem 3 cyfr")
+    
+    numeric_vals = [int(d) for d in numeric]
+    if any(not (0 <= val <= 7) for val in numeric_vals):
+        raise ValueError("Każda cyfra w trybie numerycznym musi być od 0 do 7")
+    
+    result = ''
+    for val in numeric_vals:
+        r = 'r' if val & 4 else '-'
+        w = 'w' if val & 2 else '-'
+        x = 'x' if val & 1 else '-'
+        result += r + w + x
+    return result
+
+
+### Testy jednostkowe 
+import unittest
+
+class TestPermissionConversion(unittest.TestCase):
+    def test_symbolic_to_numeric_basic(self):
+        self.assertEqual(symbolic_to_numeric("rwxr-xr--"), "754")
+        self.assertEqual(symbolic_to_numeric("rwxrwxrwx"), "777")
+        self.assertEqual(symbolic_to_numeric("---------"), "000")
+        self.assertEqual(symbolic_to_numeric("rw-r--r--"), "644")
+
+    def test_symbolic_to_numeric_invalid_length(self):
+        with self.assertRaises(ValueError):
+            symbolic_to_numeric("rwxr-x")  # za krótki
+        with self.assertRaises(ValueError):
+            symbolic_to_numeric("rwxr-xr--r")  # za długi
+
+    def test_numeric_to_symbolic_basic(self):
+        self.assertEqual(numeric_to_symbolic("754"), "rwxr-xr--")
+        self.assertEqual(numeric_to_symbolic("777"), "rwxrwxrwx")
+        self.assertEqual(numeric_to_symbolic("000"), "---------")
+        self.assertEqual(numeric_to_symbolic("644"), "rw-r--r--")
+
+    def test_numeric_to_symbolic_invalid_length_or_chars(self):
+        with self.assertRaises(ValueError):
+            numeric_to_symbolic("75")  # za krótki
+        with self.assertRaises(ValueError):
+            numeric_to_symbolic("7544")  # za długi
+        with self.assertRaises(ValueError):
+            numeric_to_symbolic("75a")  # nie-cyfry
+
+    def test_numeric_to_symbolic_out_of_range(self):
+        with self.assertRaises(ValueError):
+            numeric_to_symbolic("899")  # 8 i 9 poza zakresem
+        with self.assertRaises(ValueError):
+            numeric_to_symbolic("7-4")  # znak '-'
+
+if __name__ == "__main__":
+    unittest.main()
