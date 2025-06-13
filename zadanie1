@@ -1,4 +1,4 @@
-### Kod funkcji 
+
 def symbolic_to_numeric(symbolic: str) -> str:
     if len(symbolic) != 9:
         raise ValueError("Tryb symboliczny musi mieć dokładnie 9 znaków")
@@ -30,7 +30,7 @@ def numeric_to_symbolic(numeric: str) -> str:
     return result
 
 
-### Testy jednostkowe 
+
 import unittest
 
 class TestPermissionConversion(unittest.TestCase):
